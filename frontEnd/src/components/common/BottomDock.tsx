@@ -1,7 +1,14 @@
-import { Home, Search, Briefcase, ClipboardCheck, Bookmark } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Home, Search, Briefcase, ClipboardCheck, Bookmark, LogOut } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export const BottomDock = () => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.clear(); // Clear all app state (tokens, saved jobs, etc) for a clean logout
+        navigate('/login');
+    };
+
     const navItems = [
         { icon: Home, label: 'Feed', path: '/feed' },
         { icon: Search, label: 'Search', path: '/search' },
@@ -28,6 +35,14 @@ export const BottomDock = () => {
                         {/* <span className="text-[10px]">{item.label}</span>  */}
                     </NavLink>
                 ))}
+
+                <button
+                    onClick={handleLogout}
+                    className="flex flex-col items-center gap-1 transition-colors text-zinc-500 hover:text-red-500"
+                    aria-label="Logout"
+                >
+                    <LogOut className="w-6 h-6" />
+                </button>
             </div>
         </div>
     );
