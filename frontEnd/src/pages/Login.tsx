@@ -151,7 +151,7 @@ const Login = () => {
                             </div>
 
                             <button className="w-full bg-white text-black font-medium py-3.5 rounded-xl hover:bg-zinc-200 transition-colors mt-4">
-                                Sign In
+                                Sign Inn
                             </button>
 
                             <div className="relative my-6">
