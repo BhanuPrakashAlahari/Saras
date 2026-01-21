@@ -60,7 +60,7 @@ const Login = () => {
         const scope = 'email profile openid';
         const responseType = 'code';
 
-        const isLikelyDev = import.meta.env.VITE_API_URL?.includes('vercel') || false;
+        // const isLikelyDev = import.meta.env.VITE_API_URL?.includes('vercel') || false;
         const accessType = 'offline'; // Request refresh token
 
         const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${responseType}&scope=${encodeURIComponent(scope)}&access_type=${accessType}&prompt=consent`;
