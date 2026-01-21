@@ -12,7 +12,16 @@ import AppliedJobs from './pages/AppliedJobs';
 import Bookmarks from './pages/Bookmarks';
 import { BottomDock } from './components/common/BottomDock';
 
+import { Navigate } from 'react-router-dom';
+import { getCookie } from './utils/cookieUtils';
+
 const AuthenticatedLayout = () => {
+  const token = getCookie('token');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="relative min-h-screen">
       <Outlet />
@@ -23,19 +32,6 @@ const AuthenticatedLayout = () => {
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
-
-  // Session Restore Logic
-  useState(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Ideally this would update a global context
-      // For now detailed 'me' fetching is handled by the authService but we can trigger it
-      // to validate component state if we had a Context. 
-      // Since the prompt just asked for correct authentication flow including /me,
-      // checking for token presence effectively "restores" the session for purely client-side routing.
-      // The actual API call to /me is available in authService for use in a Provider.
-    }
-  });
 
   return (
     <BrowserRouter>

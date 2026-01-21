@@ -1,3 +1,5 @@
+import { getCookie } from '../utils/cookieUtils';
+
 const API_URL = import.meta.env.VITE_API_URL || 'https://saber-api-backend.vercel.app/api';
 
 export interface User {
@@ -37,7 +39,7 @@ export const authService = {
     },
 
     async linkProvider(provider: string, code: string, redirectUri?: string): Promise<{ status: string; message: string }> {
-        const token = localStorage.getItem('token');
+        const token = getCookie('token');
         if (!token) throw new Error('No auth token found');
 
         const response = await fetch(`${API_URL}/auth/link-provider`, {
@@ -62,7 +64,7 @@ export const authService = {
     },
 
     async me(): Promise<User> {
-        const token = localStorage.getItem('token');
+        const token = getCookie('token');
         if (!token) throw new Error('No auth token found');
 
         const response = await fetch(`${API_URL}/auth/me`, {

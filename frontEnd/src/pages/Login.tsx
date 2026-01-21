@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { authService } from '../services/auth';
+
+import { setCookie, getCookie } from '../utils/cookieUtils';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -10,10 +12,12 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const hasCalledAuth = useRef(false);
+
     // Handle OAuth Callback
     useEffect(() => {
         // Redirect if already logged in
-        if (localStorage.getItem('token')) {
+        if (getCookie('token')) {
             navigate('/feed');
             return;
         }
@@ -22,7 +26,8 @@ const Login = () => {
         const code = params.get('code');
         const state = params.get('state'); // Provider name
 
-        if (code) {
+        if (code && !hasCalledAuth.current) {
+            hasCalledAuth.current = true;
             handleOAuthCallback(code, state || 'google');
         }
     }, [location]);
@@ -38,8 +43,8 @@ const Login = () => {
             const response = await authService.login(provider, code, redirectUri);
 
             // Save session
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(response.user));
+            setCookie('token', response.token);
+            setCookie('user', JSON.stringify(response.user));
 
             navigate('/feed');
         } catch (err) {
@@ -151,7 +156,7 @@ const Login = () => {
                             </div>
 
                             <button className="w-full bg-white text-black font-medium py-3.5 rounded-xl hover:bg-zinc-200 transition-colors mt-4">
-                                Sign Inn
+                                Sign In
                             </button>
 
                             <div className="relative my-6">

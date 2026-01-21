@@ -1,11 +1,15 @@
 import { Home, Search, Briefcase, ClipboardCheck, Bookmark, LogOut } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
+import { removeCookie } from '../../utils/cookieUtils';
+
 export const BottomDock = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.clear(); // Clear all app state (tokens, saved jobs, etc) for a clean logout
+        removeCookie('token');
+        removeCookie('user');
+        localStorage.clear(); // Clear other app state if any
         navigate('/login');
     };
 
