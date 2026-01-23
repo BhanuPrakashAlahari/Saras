@@ -11,9 +11,14 @@ import { JobSkeleton } from '../components/jobs/JobSkeleton';
 
 const Jobs = () => {
     const navigate = useNavigate();
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const [recommendedJobs, setRecommendedJobs] = useState<Job[]>([]);
+    const [allJobs, setAllJobs] = useState<Job[]>([]);
+    const [activeTab, setActiveTab] = useState<'recommended' | 'all'>('recommended');
     const [loading, setLoading] = useState(true);
     const [match, setMatch] = useState<Match | null>(null);
+
+    const jobs = activeTab === 'recommended' ? recommendedJobs : allJobs;
+    const setJobs = activeTab === 'recommended' ? setRecommendedJobs : setAllJobs;
 
     useEffect(() => {
         loadFeed();
@@ -22,8 +27,9 @@ const Jobs = () => {
     const loadFeed = async () => {
         try {
             setLoading(true);
-            const data = await jobsService.getFeed();
-            setJobs(data);
+            const data = await jobsService.getFeed() as { jobs: Job[], all: Job[] };
+            setRecommendedJobs(data.jobs || []);
+            setAllJobs(data.all || []);
         } catch (error) {
             console.error("Failed to load feed:", error);
         } finally {
@@ -136,24 +142,6 @@ const Jobs = () => {
         );
     }
 
-    if (jobs.length === 0) {
-        return (
-            <div className="flex flex-col min-h-screen bg-black text-white items-center justify-center p-6 text-center">
-                <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mb-6 border border-zinc-800">
-                    <Briefcase className="w-8 h-8 text-zinc-600" />
-                </div>
-                <h2 className="text-2xl font-bold mb-2">You're all caught up!</h2>
-                <p className="text-zinc-500 max-w-xs mx-auto">Check back later for more opportunities tailored to your skills.</p>
-                <button
-                    onClick={loadFeed}
-                    className="mt-8 px-8 py-3 bg-white text-black rounded-full text-sm font-bold hover:bg-zinc-200 transition-colors shadow-lg shadow-white/10"
-                >
-                    Refresh Feed
-                </button>
-            </div>
-        );
-    }
-
     const currentJob = jobs[0];
     const nextJob = jobs[1]; // Preview for the next card underneath
 
@@ -172,6 +160,30 @@ const Jobs = () => {
             <div className="absolute inset-0 bg-neutral-950">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen"></div>
+            </div>
+
+            {/* Header Filters */}
+            <div className="absolute top-8 left-0 right-0 z-40 flex justify-center px-4">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 p-1 rounded-2xl flex gap-1 shadow-2xl">
+                    <button
+                        onClick={() => setActiveTab('recommended')}
+                        className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'recommended'
+                            ? 'bg-white text-black shadow-lg'
+                            : 'text-zinc-500 hover:text-white'
+                            }`}
+                    >
+                        Recommended for you
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('all')}
+                        className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'all'
+                            ? 'bg-white text-black shadow-lg'
+                            : 'text-zinc-500 hover:text-white'
+                            }`}
+                    >
+                        Others
+                    </button>
+                </div>
             </div>
 
             {/* Match Modal */}
@@ -229,44 +241,70 @@ const Jobs = () => {
 
             {/* Card Content */}
             <div className="relative w-full max-w-sm h-auto z-10 perspective-1000">
-                {/* Background Cards for Depth */}
-                {nextJob && (
-                    <div className="absolute top-0 w-full h-full bg-[#1A1A1A] rounded-[32px] border border-white/5 scale-[0.95] translate-y-4 opacity-50 shadow-2xl" />
-                )}
-
-                <AnimatePresence mode="wait">
+                {jobs.length === 0 ? (
                     <motion.div
-                        key={currentJob.id}
-                        className="relative w-full h-auto cursor-grab active:cursor-grabbing preserve-3d"
-                        style={{ x, rotate, opacity, scale }}
-                        drag={match ? false : "x"}
-                        dragConstraints={{ left: 0, right: 0 }}
-                        onDragEnd={handleDragEnd}
-                        initial={{ scale: 0.95, opacity: 0, y: 50 }}
-                        animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
-                        exit={{ scale: 0.95, opacity: 0 }}
-                        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex flex-col items-center justify-center p-6 text-center bg-[#0A0A0A] border border-white/10 rounded-[32px] h-[520px] shadow-2xl"
                     >
-                        {/* Swipe Overlay Indicators */}
-                        <motion.div style={{ opacity: bgLikeOpacity }} className="absolute inset-0 z-30 bg-gradient-to-r from-transparent to-emerald-500/30 pointer-events-none rounded-[32px] backdrop-blur-[1px]" />
-                        <motion.div style={{ opacity: bgDislikeOpacity }} className="absolute inset-0 z-30 bg-gradient-to-l from-transparent to-red-500/30 pointer-events-none rounded-[32px] backdrop-blur-[1px]" />
-
-                        <JobCard
-                            title={currentJob.problem_statement}
-                            company={currentJob.company?.name}
-                            rate={formatSalary(currentJob.constraints?.salary_range || [])}
-                            location={currentJob.constraints?.location || 'Remote'}
-                            type={currentJob.constraints?.employment_type || 'Full-time'}
-                            experience={`${currentJob.constraints?.experience_years || 0}+ years`}
-                            expectations={currentJob.expectations}
-                            skills={currentJob.skills_required}
-                            logoUrl={currentJob.company?.logo_url}
-                            coverImageUrl={currentJob.company?.cover_image_url}
-                            className="h-[520px]"
-                            onSave={() => handleBookmark(currentJob.id)}
-                        />
+                        <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mb-6 border border-zinc-800">
+                            <Briefcase className="w-8 h-8 text-zinc-600" />
+                        </div>
+                        <h2 className="text-2xl font-bold mb-2">You're all caught up!</h2>
+                        <p className="text-zinc-500 max-w-xs mx-auto mb-8">
+                            {activeTab === 'recommended'
+                                ? "Check back later for more tailored recommendations."
+                                : "Check back later for more opportunities."}
+                        </p>
+                        <button
+                            onClick={loadFeed}
+                            className="px-8 py-3 bg-white text-black rounded-full text-sm font-bold hover:bg-zinc-200 transition-colors shadow-lg shadow-white/10"
+                        >
+                            Refresh Feed
+                        </button>
                     </motion.div>
-                </AnimatePresence>
+                ) : (
+                    <>
+                        {/* Background Cards for Depth */}
+                        {nextJob && (
+                            <div className="absolute top-0 w-full h-full bg-[#1A1A1A] rounded-[32px] border border-white/5 scale-[0.95] translate-y-4 opacity-50 shadow-2xl" />
+                        )}
+
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentJob.id}
+                                className="relative w-full h-auto cursor-grab active:cursor-grabbing preserve-3d"
+                                style={{ x, rotate, opacity, scale }}
+                                drag={match ? false : "x"}
+                                dragConstraints={{ left: 0, right: 0 }}
+                                onDragEnd={handleDragEnd}
+                                initial={{ scale: 0.95, opacity: 0, y: 50 }}
+                                animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                            >
+                                {/* Swipe Overlay Indicators */}
+                                <motion.div style={{ opacity: bgLikeOpacity }} className="absolute inset-0 z-30 bg-gradient-to-r from-transparent to-emerald-500/30 pointer-events-none rounded-[32px] backdrop-blur-[1px]" />
+                                <motion.div style={{ opacity: bgDislikeOpacity }} className="absolute inset-0 z-30 bg-gradient-to-l from-transparent to-red-500/30 pointer-events-none rounded-[32px] backdrop-blur-[1px]" />
+
+                                <JobCard
+                                    title={currentJob.problem_statement}
+                                    company={currentJob.company?.name}
+                                    rate={formatSalary(currentJob.constraints?.salary_range || [])}
+                                    location={currentJob.constraints?.location || 'Remote'}
+                                    type={currentJob.constraints?.employment_type || 'Full-time'}
+                                    experience={`${currentJob.constraints?.experience_years || 0}+ years`}
+                                    expectations={currentJob.expectations}
+                                    skills={currentJob.skills_required}
+                                    logoUrl={currentJob.company?.logo_url}
+                                    coverImageUrl={currentJob.company?.cover_image_url}
+                                    className="h-[520px]"
+                                    onSave={() => handleBookmark(currentJob.id)}
+                                />
+                            </motion.div>
+                        </AnimatePresence>
+                    </>
+                )}
             </div>
 
             {/* Minimal Branding */}

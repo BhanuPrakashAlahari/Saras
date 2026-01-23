@@ -13,7 +13,7 @@ export interface FeedResponse {
     articles: Article[];
 }
 
-const API_URL = '/api/tech';
+const API_URL = 'https://tech-feed-beta.vercel.app/api/tech';
 
 export const feedService = {
     getTechFeed: async (): Promise<Article[]> => {

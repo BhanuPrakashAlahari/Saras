@@ -76,8 +76,8 @@ export interface Application {
 
 export const jobsService = {
     getFeed: async () => {
-        const response = await api.get<{ jobs: Job[] }>('/jobs/feed');
-        return response.data.jobs;
+        const response = await api.get<{ jobs: Job[], all: Job[] }>('/jobs/feed');
+        return response.data;
     },
 
     swipe: async (jobId: string, direction: 'left' | 'right') => {
