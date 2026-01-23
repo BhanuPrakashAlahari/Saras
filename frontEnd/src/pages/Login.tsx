@@ -72,17 +72,17 @@ const Login = () => {
     }
   };
 
-  const handleGoogleClick = () => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const scope = 'openid email';
-    const state = 'google';
+  // const handleGoogleClick = () => {
+  //   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  //   const scope = 'openid email';
+  //   const state = 'google';
 
-    localStorage.setItem('auth_provider', state);
+  //   localStorage.setItem('auth_provider', state);
 
-    // Strictly matching demo code URL structure (no prompt, explicit params)
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state}`;
-    window.location.href = authUrl;
-  };
+  //   // Strictly matching demo code URL structure (no prompt, explicit params)
+  //   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${encodeURIComponent(scope)}&state=${state}`;
+  //   window.location.href = authUrl;
+  // };
 
   const handleGithubClick = () => {
     const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
@@ -142,7 +142,7 @@ const Login = () => {
           <>
 
             <div className="flex justify-center gap-4 mt-6">
-              <button
+              {/*   <button
                 type="button"
                 onClick={handleGoogleClick}
                 className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-zinc-800 transition-colors"
@@ -165,7 +165,7 @@ const Login = () => {
                     fill="#EA4335"
                   />
                 </svg>
-              </button>
+              </button> */}
 
               <button
                 type="button"
