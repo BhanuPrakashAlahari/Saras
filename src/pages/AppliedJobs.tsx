@@ -114,19 +114,57 @@ const AppliedJobs = () => {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    className="bg-[#121212] border border-white/5 rounded-3xl overflow-hidden shadow-lg group"
+                                    className="bg-[#121212] border border-white/5 rounded-3xl overflow-hidden shadow-lg group relative"
                                 >
-                                    <div className="p-6">
+                                    {/* Cover Image Section */}
+                                    <div className="h-24 w-full relative overflow-hidden bg-zinc-900">
+                                        {app.job.company.cover_image_url ? (
+                                            <img
+                                                src={app.job.company.cover_image_url}
+                                                alt="Cover"
+                                                className="w-full h-full object-cover opacity-60"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-zinc-800 via-zinc-900 to-black opacity-80" />
+                                        )}
+                                        <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                                    </div>
+
+                                    {/* Avatar Section */}
+                                    <div className="px-6 -mt-10 relative z-10 flex justify-between items-end mb-3">
+                                        <div className="relative">
+                                            <div className="h-20 w-20 rounded-full border-[6px] border-[#121212] bg-zinc-800 shadow-2xl overflow-hidden flex items-center justify-center">
+                                                {app.job.company.logo_url ? (
+                                                    <img
+                                                        src={app.job.company.logo_url}
+                                                        alt={app.job.company.name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).style.display = 'none';
+                                                            (e.target as HTMLElement).parentElement?.querySelector('.fallback-text')?.classList.remove('hidden');
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <span className={`text-zinc-400 text-xl font-bold fallback-text ${app.job.company.logo_url ? 'hidden' : ''}`}>
+                                                    {app.job.company.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="px-6 pb-6">
+                                        {/* Header: Company Name, Role, Status */}
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex-1 min-w-0 mr-4">
-                                                <h3 className="font-bold text-lg text-white group-hover:text-emerald-400 transition-colors truncate">
+                                                <h3 className="font-bold text-xl text-white group-hover:text-emerald-400 transition-colors truncate">
                                                     {app.job.company.name}
                                                 </h3>
-                                                <p className="text-zinc-400 text-sm line-clamp-1 mt-0.5 font-light">
+                                                <p className="text-zinc-400 text-sm line-clamp-1 mt-0.5 font-bold">
                                                     {app.job.problem_statement}
                                                 </p>
                                             </div>
-                                            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${styles.bg} ${styles.color} ${styles.border} border text-[10px] font-black uppercase tracking-wider`}>
+                                            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${styles.bg} ${styles.color} ${styles.border} border text-[10px] font-black uppercase tracking-wider flex-shrink-0`}>
                                                 {styles.icon}
                                                 {app.status}
                                             </div>
