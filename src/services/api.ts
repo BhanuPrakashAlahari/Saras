@@ -12,34 +12,67 @@ export const api = axios.create({
     },
 });
 
-// Request Interceptor: Attach Token
+// Request Interceptor: Attach Token & Handle Caching
 api.interceptors.request.use(
     (config) => {
         const token = useAuthStore.getState().token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Caching Logic for GET requests
+        if (config.method?.toLowerCase() === 'get') {
+            try {
+                const key = `api_cache_${config.url}_${JSON.stringify(config.params || {})}`;
+                const cached = localStorage.getItem(key);
+
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    // Override the adapter for this specific request to return cached data
+                    // avoiding the actual network call
+                    config.adapter = () => {
+                        return Promise.resolve({
+                            data,
+                            status: 200,
+                            statusText: 'OK',
+                            headers: {},
+                            config,
+                            request: {}
+                        });
+                    };
+                }
+            } catch (e) {
+                console.warn('Error accessing cache', e);
+            }
+        }
+
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle Errors (Global 429, 401)
+// Response Interceptor: Handle Errors & Cache Responses
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Cache successful GET responses
+        if (response.config.method?.toLowerCase() === 'get') {
+            try {
+                const key = `api_cache_${response.config.url}_${JSON.stringify(response.config.params || {})}`;
+                localStorage.setItem(key, JSON.stringify(response.data));
+            } catch (e) {
+                console.warn('Failed to cache response', e);
+            }
+        }
+        return response;
+    },
     (error) => {
         const status = error.response ? error.response.status : null;
 
         if (status === 401) {
             // Token expired or invalid
             useAuthStore.getState().logout();
-            // Optional: Redirect to login is usually handled by Router usage of auth state
         } else if (status === 429) {
-            // Rate Limit Reached
-            // We can dispatch a global event or update a store state to show a modal
             console.error("Rate limit reached");
-            // For now, we propagate the error so components can handle specific 429s (like Swipe limit)
-            // or we could emit an event here.
             window.dispatchEvent(new CustomEvent('api-rate-limit'));
         }
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api';
 
 export interface Article {
     title: string;
@@ -18,7 +18,7 @@ const API_URL = 'https://tech-feed-beta.vercel.app/api/tech';
 export const feedService = {
     getTechFeed: async (): Promise<Article[]> => {
         try {
-            const response = await axios.get<FeedResponse>(API_URL);
+            const response = await api.get<FeedResponse>(API_URL);
             return response.data.articles;
         } catch (error) {
             console.error("Failed to fetch tech feed:", error);
