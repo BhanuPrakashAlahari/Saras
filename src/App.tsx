@@ -11,6 +11,7 @@ import Jobs from './pages/Jobs';
 import AppliedJobs from './pages/AppliedJobs';
 import Bookmarks from './pages/Bookmarks';
 import Matches from './pages/Matches';
+import Dashboard from './pages/Dashboard';
 import Onboarding from './pages/Onboarding';
 import { BottomDock } from './components/common/BottomDock';
 import { useAuthStore } from './store/useAuthStore';
@@ -111,6 +112,7 @@ const App = () => {
               <Route path="/matches" element={<Matches />} />
               <Route path="/applied" element={<AppliedJobs />} />
               <Route path="/bookmarks" element={<Bookmarks />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Routes>
         </MobileLayout>

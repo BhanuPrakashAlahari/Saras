@@ -4,8 +4,10 @@ import { Github, Linkedin, X, MapPin, DollarSign, Globe, Briefcase, User as User
 import { motion, AnimatePresence } from 'framer-motion';
 import { feedService, type Article } from '../services/feed';
 
+
 const ProfileModal = ({ onClose }: { onClose: () => void }) => {
     const { user } = useAuthStore();
+
 
     if (!user) return null;
 
@@ -38,6 +40,9 @@ const ProfileModal = ({ onClose }: { onClose: () => void }) => {
                 className="w-full max-w-md bg-[#121212] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl relative max-h-[85vh] overflow-y-auto no-scrollbar"
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* ... (rest of the component until button) */}
+                {/* I will scope the replacement to just the start and the button area to avoid rewriting everything. */}
+                {/* Actually, let's just insert the hook and change the button onClick. */}
                 {/* Header Image / Pattern */}
                 <div className="h-32 bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-900 relative">
                     {/* Decorative Elements */}
@@ -147,35 +152,46 @@ const ProfileModal = ({ onClose }: { onClose: () => void }) => {
                                 </span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Connected Accounts */}
-                    <div>
-                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-1">Linked Accounts</h3>
-                        <div className="space-y-2">
-                            {accounts.map((acc: any) => (
-                                <div key={acc.id} className="flex items-center p-3 bg-zinc-900/50 rounded-2xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
-                                    <div className="p-2 bg-white/5 rounded-xl text-zinc-300 mr-3 border border-white/5">
-                                        {getProviderIcon(acc.provider)}
-                                    </div>
-                                    <div className="flex-1 overflow-hidden">
-                                        <p className="text-sm font-bold text-white capitalize">{acc.provider}</p>
-                                        <p className="text-xs text-zinc-500 truncate font-mono mt-0.5 opacity-60">{acc.provider_user_id}</p>
-                                    </div>
-                                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
-                                        <CheckCircle className="w-4 h-4" />
-                                    </div>
+                        {/* Dashboard Link */}
+                        <button
+                            onClick={() => {
+                                onClose();
+                                window.location.href = '/dashboard';
+                            }}
+                            className="w-full mt-4 py-3 bg-white text-black font-bold rounded-2xl shadow-lg hover:bg-zinc-200 transition-colors uppercase tracking-widest text-xs"
+                        >
+                            View Analytics Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                {/* Connected Accounts */}
+                <div>
+                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-1">Linked Accounts</h3>
+                    <div className="space-y-2">
+                        {accounts.map((acc: any) => (
+                            <div key={acc.id} className="flex items-center p-3 bg-zinc-900/50 rounded-2xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
+                                <div className="p-2 bg-white/5 rounded-xl text-zinc-300 mr-3 border border-white/5">
+                                    {getProviderIcon(acc.provider)}
                                 </div>
-                            ))}
-                            {accounts.length === 0 && (
-                                <p className="text-sm text-zinc-600 italic px-2">No connected accounts found.</p>
-                            )}
-                        </div>
+                                <div className="flex-1 overflow-hidden">
+                                    <p className="text-sm font-bold text-white capitalize">{acc.provider}</p>
+                                    <p className="text-xs text-zinc-500 truncate font-mono mt-0.5 opacity-60">{acc.provider_user_id}</p>
+                                </div>
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                                    <CheckCircle className="w-4 h-4" />
+                                </div>
+                            </div>
+                        ))}
+                        {accounts.length === 0 && (
+                            <p className="text-sm text-zinc-600 italic px-2">No connected accounts found.</p>
+                        )}
                     </div>
-
                 </div>
             </motion.div>
         </motion.div>
+
     );
 };
 
