@@ -1,4 +1,4 @@
-import { Home, Briefcase, ClipboardCheck, Bookmark, LogOut } from 'lucide-react';
+import { Home, Briefcase, ClipboardCheck, Bookmark, LogOut, LayoutDashboard } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 // import { removeCookie } from '../../utils/cookieUtils';
@@ -15,6 +15,7 @@ export const BottomDock = () => {
 
     const navItems = [
         { icon: Home, label: 'Feed', path: '/feed' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Briefcase, label: 'Jobs', path: '/jobs' },
         { icon: ClipboardCheck, label: 'Applied', path: '/applied' },
         { icon: Bookmark, label: 'Saved', path: '/bookmarks' },
