@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Briefcase, Trash2, Bookmark as BookmarkIcon, Loader2, DollarSign, ExternalLink } from 'lucide-react';
+import { MapPin, Briefcase, Trash2, Bookmark as BookmarkIcon, DollarSign, ExternalLink } from 'lucide-react';
 import { bookmarksService } from '../services/bookmarks';
 import type { Bookmark } from '../services/jobs';
 import { motion, AnimatePresence } from 'framer-motion';
+
+import { BookmarkSkeleton } from '../components/bookmarks/BookmarkSkeleton';
 
 const Bookmarks = () => {
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -45,8 +47,16 @@ const Bookmarks = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
+            <div className="min-h-screen bg-black text-white pb-24 pt-8 px-4">
+                <header className="mb-8 px-2">
+                    <h1 className="text-3xl font-bold tracking-tight">Bookmarks</h1>
+                    <p className="text-zinc-500 text-sm mt-1">Jobs you've saved for later review</p>
+                </header>
+                <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                        <BookmarkSkeleton key={i} />
+                    ))}
+                </div>
             </div>
         );
     }
